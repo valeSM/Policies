@@ -117,7 +117,9 @@ public class Program {
 	    
 	    ArrayList<RDFNode> listOfNodes = new ArrayList<RDFNode>();
 	    
+	    int numResources = 0;
 	    ResIterator iter4 = model.listResourcesWithProperty(propertyAllowedOperation);
+	    //System.out.println("Number of resources: " + iter4.toString());
 	    while (iter4.hasNext())
 	    {
 	    	Resource r = iter4.nextResource();
@@ -132,14 +134,33 @@ public class Program {
 	        	//System.out.println(n.toString());
 	        }
 	        //System.out.println("");
+	        numResources = numResources + 1;
 	    }
+	    System.out.println("Number of licenses: " + numResources + "\n");
 	    
 	    System.out.println("Number of nodes: " + listOfNodes.size());
+	    
+	    Hashtable<String, Integer> contenedor=new Hashtable<String,Integer>();
 	    for(int i = 0; i < listOfNodes.size(); i++)
 	    {
 	    	RDFNode n = listOfNodes.get(i);
 	    	System.out.println(n.toString());
+	    	if (contenedor.containsKey(n.toString()) == false)
+	    		contenedor.put(n.toString(), 1);
+	    	else
+	    	{
+	    		int value = contenedor.get(n.toString());
+	    		value = value + 1;
+	    		contenedor.put(n.toString(), value);
+	    	}
+	    	//System.out.println(contenedor.toString() + "\n");
 	    }
+	    
+	    System.out.println("\n" + contenedor.toString());
+	    System.out.println(contenedor.size());
+	    
+	    // write file and apply operations
+	    
 	    
 	    /*System.out.println("\n");
 	    
