@@ -160,6 +160,14 @@ public class Program {
 	    System.out.println(contenedor.size());
 	    
 	    // write file and apply operations
+//	    Model model_out = ModelFactory.createDefaultModel();
+//	    Statement st, new_tripple;
+//	    //st = new Statement();
+//	    new_tripple = model_out.createStatement(
+//                st.getSubject(),
+//                model_out.createProperty(ns_w,"end"),
+//                begin.plus(p).toString()) ;
+//	    model_out.add(new_tripple);
 	    
 	    
 	    /*System.out.println("\n");
