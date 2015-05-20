@@ -10,6 +10,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.atlas.logging.*;
 
 import com.hp.hpl.jena.datatypes.* ;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.query.*;
@@ -83,7 +84,7 @@ public class Program {
 		Model model = ModelFactory.createDefaultModel();
 	    try {
 			model.read(new FileInputStream("/Users/valentina/Documents/workspace/PoliciesComposition/data/Health-license.ttl"),null,"TTL");
-			//model.write(System.out);
+			model.write(System.out);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -123,7 +124,12 @@ public class Program {
 	    while (iter4.hasNext())
 	    {
 	    	Resource r = iter4.nextResource();
-	    
+	    	
+	    	/*StmtIterator test = r.listProperties();
+	    	while(test.hasNext())
+	    		System.out.println("\nListProperties: "+test.nextStatement().toString());
+	    	System.out.println("\n");*/
+	    	
 		    StmtIterator iter5 = r.listProperties(propertyAllowedOperation);
 	        while (iter5.hasNext())
 	        {
@@ -156,8 +162,17 @@ public class Program {
 	    	//System.out.println(contenedor.toString() + "\n");
 	    }
 	    
-	    System.out.println("\n" + contenedor.toString());
-	    System.out.println(contenedor.size());
+	    System.out.println("\n" + contenedor.toString() + "\n");
+	    //System.out.println(contenedor.size());
+	    
+	    Model model_out = ModelFactory.createDefaultModel();
+	    model_out.setNsPrefixes(model.getNsPrefixMap());
+	    Resource r = model_out.createResource(ns_l + "resultedPolicy");
+	    Property p = model_out.createProperty(ns + "allowedOperation");
+		
+		r.addProperty(p, contenedor.keys().nextElement(), XSDDatatype.XSDstring);
+		
+		model_out.write(System.out, "Turtle");
 	    
 	    // write file and apply operations
 //	    Model model_out = ModelFactory.createDefaultModel();
