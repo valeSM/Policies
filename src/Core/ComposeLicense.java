@@ -82,7 +82,7 @@ public class ComposeLicense {
 	private void mergePolicies()
 	{
 		//outputModel.setNsPrefixes(loadedModel.getNsPrefixMap());
-		new_resource = outputModel.createResource(ns_l + "resultedPolicy");
+		new_resource = outputModel.createResource(this.ns_l + "resultedPolicy");
 		
 		// for allowed properties
 		analyzeTerm("allowedOperation", "AND");
@@ -172,13 +172,11 @@ public class ComposeLicense {
 	
 	private void addTerm(String p, String obj)
 	{
-		Property pred = outputModel.createProperty(ns + p);
-		if (new_resource != null)
-		{
-			new_resource.addProperty(pred, ("term:"+obj).toString());
-			//new_resource.addProperty(pred, obj, ns_t);
-			//Resource r = outputModel.cre
-		}
+		Statement new_tripple = outputModel.createStatement(
+				outputModel.getResource(this.ns_l + "resultedPolicy"),
+				outputModel.createProperty(this.ns + p),
+				outputModel.createProperty(this.ns_t, obj));
+		outputModel.add(new_tripple);
 	}
 	
 	private boolean writeFile()
@@ -196,7 +194,6 @@ public class ComposeLicense {
 	    	System.err.println(e.getMessage());
 	    	return false;
 	    }
-		
 		return true;
 	}
 }
