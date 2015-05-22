@@ -29,12 +29,8 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * 14/05/2015
  */
 
-public class ComposeLicense {
-
-	private String fileName = "";
-	private String fileType = "";
-	
-	
+public class ComposeLicense 
+{
 	public String ns   = "http://privacy-lookout.net/ontologies/current/pl-ontology#" ;
 	public String nsFile = "./pl-ontology.n3";
 	public String ns_w   = "http://privacy-lookout.net/ontologies/current/pl-workflow#" ;
@@ -47,6 +43,8 @@ public class ComposeLicense {
 	public String rulesDir = "./";
 	public String policiesDir = "./";
 	
+	private String fileName = "";
+	private String fileType = "";
 	private int num_licenses = 0;
 	private Model loadedModel;
 	private Model outputModel;
