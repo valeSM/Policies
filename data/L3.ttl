@@ -1,0 +1,23 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+@base <http://privacy-lookout.net/ontologies/current/> .
+@prefix pl:   <pl-ontology#> . 
+@prefix term: <pl-usage-terms#> .
+@prefix lic:  <pl-licenses#> .
+@prefix wkf:  <pl-workflow#> .
+
+# all the prohibitedPurpose and prohibitedOperation are the InverseOf allowedPurpose and allowedOperation respectively
+
+# for an elder
+lic:Elder a pl:License ;
+	rdfs:comment "This license defines the policy of use of data of a resident in the geriatric center context"@en ;
+	pl:prohibitedPurpose term:commercial ;
+    pl:allowedPurpose term:medical, term:consultation, term:wellbeing, term:care, term:tracking ;
+    pl:allowedOperation term:read, term:write, term:waiver, term:constraintDerivative ;
+    pl:prohibitedOperation term:rename, term:unlimitedDisclosure .

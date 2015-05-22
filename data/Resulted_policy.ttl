@@ -1,0 +1,16 @@
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix lic:   <http://privacy-lookout.net/ontologies/current/pl-licenses#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix term:  <http://privacy-lookout.net/ontologies/current/pl-usage-terms#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix wkf:   <http://privacy-lookout.net/ontologies/current/pl-workflow#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix pl:    <http://privacy-lookout.net/ontologies/current/pl-ontology#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+lic:resultedPolicy  a           pl:License ;
+        pl:allowedOperation     term:read , term:write ;
+        pl:allowedPurpose       term:medical , term:care ;
+        pl:prohibitedOperation  term:unlimitedDisclosure , term:rename ;
+        pl:prohibitedPurpose    term:commercial , term:private .
