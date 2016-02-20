@@ -16,10 +16,17 @@ public class Initio {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		args = new String[3];
+		/*args = new String[3];
 		args[0] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/L1.ttl";
 		args[1] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/L2.ttl";
-		args[2] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/L3.ttl";
+		args[2] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/L3.ttl";*/
+		args = new String[1];
+		args[0] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/CompositionTest_medical1.ttl";
+		//args[0] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/CompositionTest_scientific1.ttl";
+		//args[0] = "/Users/valentina/Documents/workspace/PoliciesComposition/data/Test4presentation.ttl";
+		//args[0] = "/Users/valentina/Dropbox/module IR 2014/PrivacyLookout (dup. see on Drive)/Ontology-last version/policies/villata_approach2.ttl";
+		
+		
 		String resulted_filename = null;
 		// TODO Auto-generated method stub
 		if (args == null)
@@ -33,7 +40,7 @@ public class Initio {
 				input_file = new File(args[i]);
 				if (input_file.exists())
 				{
-					System.out.println("++++++++++ Iteration #" + (i+1) + "   ++++++++++");
+					//System.out.println("++++++++++ Iteration #" + (i+1) +" of file " + input_file.getName() + "   ++++++++++");
 					if (resulted_filename == null)
 						resulted_filename = lcomp.analyzeFile(input_file, null, "TTL");
 					else
