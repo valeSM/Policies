@@ -13,6 +13,8 @@ import java.util.Hashtable;
 
 import Core.License.Term;
 
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
@@ -33,13 +35,13 @@ import com.hp.hpl.jena.vocabulary.RDF;
  */
 
 public class LicenseComposition {
-	public String ns   = "http://privacy-lookout.net/ontologies/current/pl-ontology#" ;
+	public String ns   = "http://privacy-lookout.net/ontologies/current/pl-ontology.n3#" ;
 	public String nsFile = "./pl-ontology.n3";
-	public String ns_w   = "http://privacy-lookout.net/ontologies/current/pl-workflow#" ;
+	public String ns_w   = "http://privacy-lookout.net/ontologies/current/pl-workflow.n3#" ;
 	public String ns_wFile = "./pl-ontology.n3";
-	public String ns_t = "http://privacy-lookout.net/ontologies/current/pl-usage-terms#" ;
+	public String ns_t = "http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#" ;
 	public String ns_tFile = "./pl-usage-terms.n3";
-	public String ns_l = "http://privacy-lookout.net/ontologies/current/pl-licenses#" ;
+	public String ns_l = "http://privacy-lookout.net/ontologies/current/pl-licenses.n3#" ;
 	public String ns_lFile = "./pl-licenses.n3";
 	public String sparqlDir = "./";
 	public String rulesDir = "./";
@@ -54,6 +56,9 @@ public class LicenseComposition {
 	private Model output_model = null;
 	private String filename_resulted = "";
 	private ArrayList<License> licenses_list = null;
+	private int num_license_actual = 0;
+	
+	static protected OntModel owlmodel = null;
 	
 	public String analyzeFile(File policy_1, File policy_2, String format)
 	{
@@ -101,6 +106,7 @@ public class LicenseComposition {
 		{
 			for (int i = 0; i < this.licenses_list.size(); i++)
 			{
+				this.num_license_actual = i;
 				final_license = mergeLicenses(final_license, this.licenses_list.get(i));
 			}
 			this.addLicenseToOutput(final_license);
@@ -136,34 +142,50 @@ public class LicenseComposition {
 		return r;
 	}
 	
+	//private ArrayList
+	
 	private ArrayList<Term> combineTerms(ArrayList<Term> t1, ArrayList<Term> t2, String operation)
 	{
-		ArrayList<Term> comb = new ArrayList<Term>();
 		ArrayList<Term> out = new ArrayList<Term>();
-		//comb = new ArrayList<Term>(t1,t2);
-		comb.addAll(t1);
-		comb.addAll(t2);
-		
 		Hashtable<String, Integer> contenedor = new Hashtable<String,Integer>();
-	    for(int i = 0; i < comb.size(); i++)
-	    {
-	    	Term n = comb.get(i);
-	    	String text_val = n.getName();
-	    	//System.out.println(n.toString());
-	    	if (contenedor.containsKey(text_val) == false)
-	    	{
-	    		contenedor.put(text_val, 1);
-	    		comb.get(i).setStatus(false);
-	    		out.add(comb.get(i));
-	    	}
-	    	else
-	    	{
-	    		int value = contenedor.get(text_val);
-	    		value = value + 1;
-	    		contenedor.put(text_val, value);
-	    	}
-	    }
-	    
+
+		for (int i = 0; i < t1.size(); i++)
+		{
+			Term n = t1.get(i);
+			String text_val = n.getName();
+			if(contenedor.contains(text_val) == false)
+			{
+				contenedor.put(text_val, 1);
+				out.add(n);
+			}
+		}
+		for (int j = 0; j < t2.size(); j++)
+		{
+			Term n = t2.get(j);
+			String text_val = n.getName();
+			if(contenedor.containsKey(text_val) == false)
+			{
+				contenedor.put(text_val, 1);
+				out.add(n);
+			}
+			else
+			{
+				contenedor.put(text_val, 2);
+				// update state of the term in the output array
+				for (int k = 0; k < out.size(); k++)
+				{
+					Term t = out.get(k);
+					if (t.getName().equals(text_val))
+					{
+						if (this.num_license_actual == 1)
+							t.setStatus(true);
+						else
+							t.setStatus(t.isStatus() && true);
+					}
+				}
+			}
+		}
+
 	    Enumeration<String> keys = contenedor.keys();
 		while (keys.hasMoreElements()) 
 		{
@@ -171,16 +193,31 @@ public class LicenseComposition {
 			switch (operation)
 			{
 				case "AND":
-					if (contenedor.get(prop_value) == this.licenses_list.size())
+					//System.out.println("evaluate AND " + contenedor.toString() + "    with key = " + prop_value);
+					if (contenedor.get(prop_value) == 2)
 					{
-						for (int m = 0; m < out.size(); m++)
+						for (int k = 0; k < out.size(); k++)
 						{
-							Term t = out.get(m);
-							if(t.getName().equals(prop_value))
-								t.setStatus(true);
+							Term t = out.get(k);
+							if (t.getName().equals(prop_value))
+							{
+								t.setStatus(t.isStatus() && true);
+								//System.out.println(t.getName() + " = " + t.isStatus());		
+							}
 						}
 					}
-						//addTerm(nameProperty, prop_value.toString());
+					else		// indicates that the term was only present in one of the actuals policies, but can be true from previous steps
+					{
+						for (int k = 0; k < out.size(); k++)
+						{
+							Term t = out.get(k);
+							if (t.getName().equals(prop_value))
+							{
+								t.setStatus(t.isStatus() && false);
+								//System.out.println(t.getName() + " = " + t.isStatus());		
+							}
+						}
+					}
 					break;
 				case "OR":
 					for (int m = 0; m < out.size(); m++)
@@ -189,12 +226,12 @@ public class LicenseComposition {
 						if(t.getName().equals(prop_value))
 							t.setStatus(true);
 					}
-					//addTerm(nameProperty, prop_value.toString());
 					break;
 				default:
 					break;
 			}	
 		}
+		//System.out.println();
 		return out;
 	}
 	
@@ -211,7 +248,8 @@ public class LicenseComposition {
 		{
 			Term aux = l.getMandatoryTermsList().get(i);
 			if (aux.isStatus())
-				this.addTerm(l.getLicenseName(), "mandatory" + aux.getType(), aux.getName());
+				//this.addTerm(l.getLicenseName(), "mandatory" + aux.getType(), aux.getName());
+				this.addTerm(l.getLicenseName(), "obliges", aux.getName());
 		}
 		
 		// add allowed terms
@@ -219,7 +257,8 @@ public class LicenseComposition {
 		{
 			Term aux = l.getAllowedTermsList().get(i);
 			if (aux.isStatus())
-				this.addTerm(l.getLicenseName(), "allowed" + aux.getType(), aux.getName());
+				//this.addTerm(l.getLicenseName(), "allowed" + aux.getType(), aux.getName());
+				this.addTerm(l.getLicenseName(), "permits", aux.getName());
 		}
 		
 		// add prohibited terms
@@ -227,7 +266,8 @@ public class LicenseComposition {
 		{
 			Term aux = l.getProhibitedTermsList().get(i);
 			if (aux.isStatus())
-				this.addTerm(l.getLicenseName(), "prohibited" + aux.getType(), aux.getName());
+				//this.addTerm(l.getLicenseName(), "prohibited" + aux.getType(), aux.getName());
+				this.addTerm(l.getLicenseName(), "prohibits", aux.getName());
 		}
 	}
 	
@@ -266,43 +306,56 @@ public class LicenseComposition {
 				
 				// obtain the different properties
 				// all allowed terms
-				ArrayList<String> aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedOperation");
-				if (!aux.equals(""))
+				ArrayList<String> aux;
+				aux = getSpecificLocalNameOfProperty(lic, this.ns, "permits");
+				if(aux.size() != 0)
+					l.addAllowedTerm(aux, "Permits");
+				
+				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibits");
+				if(aux.size() != 0)
+					l.addProhibitedTerm(aux, "Prohibitions");
+				
+				aux = getSpecificLocalNameOfProperty(lic, this.ns, "obliges");
+				if(aux.size() != 0)
+					l.addMandatoryTerm(aux, "Obligations");
+				
+				/*aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedOperation");
+				if(aux.size() != 0)
 					l.addAllowedTerm(aux, "Operation");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedStatement");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addAllowedTerm(aux, "Statement");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedPurpose");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addAllowedTerm(aux, "Purpose");
 				
 				// all mandatory terms
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryOperation");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addMandatoryTerm(aux, "Operation");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryStatement");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addMandatoryTerm(aux, "Statement");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryPurpose");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addMandatoryTerm(aux, "Purpose");
 				
 				// all prohibited terms
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedOperation");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addProhibitedTerm(aux, "Operation");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedStatement");
-				if (!aux.equals(""))
+				if(aux.size() != 0)
 					l.addProhibitedTerm(aux, "Statement");
 				
 				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedPurpose");
-				if (!aux.equals(""))
-					l.addProhibitedTerm(aux, "Purpose");
+				if(aux.size() != 0)
+					l.addProhibitedTerm(aux, "Purpose");*/
 				
 				this.licenses_list.add(l);
 			}
@@ -315,6 +368,20 @@ public class LicenseComposition {
 	
 	private ArrayList<String> getSpecificLocalNameOfProperty(Resource r, String namespace, String property_localname)
 	{
+		//System.out.println(r.toString());
+		/*StmtIterator u = r.listProperties();
+		while (u.hasNext())
+		{
+			Statement z = u.nextStatement();
+			String the_pred = z.getPredicate().toString();
+			String the_compare = namespace + property_localname;
+			System.out.println("PRED = " + the_pred);
+			System.out.println("QUERY = " + the_compare);
+			if (the_pred.equals(the_compare))
+				System.out.println(z.getObject().toString());
+		}*/
+		
+		
 		ArrayList<String> result_list = new ArrayList<String>();
 		String result = "";
 		Property p = ResourceFactory.createProperty(namespace, property_localname);
@@ -399,5 +466,20 @@ public class LicenseComposition {
 			e.printStackTrace();
 		}
 	}
+	
+	/*protected OntModel loadOntology() {
+		if (owlmodel == null) {
+			owlmodel = ModelFactory.createOntologyModel(
+									OntModelSpec.OWL_MEM_MICRO_RULE_INF, 
+										ModelFactory.createDefaultModel()) ;	  
+			owlmodel.read(nsFile,"N3");
+			owlmodel.read(ns_tFile,"N3");
+			owlmodel.read(ns_lFile,"N3");
+			owlmodel.read(ns_wFile,"N3");			
+		}
+		return ModelFactory.createOntologyModel(
+									OntModelSpec.OWL_MEM_MICRO_RULE_INF, 
+									owlmodel)  ;
+	}*/
 	
 }
