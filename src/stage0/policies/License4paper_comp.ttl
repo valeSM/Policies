@@ -1,0 +1,26 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> . 
+@prefix dc: <http://purl.org/dc/terms/> .
+
+@prefix pl:  <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix wkf: <http://privacy-lookout.net/ontologies/current/pl-workflow.n3#> .
+@prefix lic: <http://privacy-lookout.net/ontologies/current/pl-licenses.n3#> .
+@prefix term: <http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#> .
+@prefix l4lod: <http://ns.inria.fr/l4lod/v2#> .
+
+@prefix : <Resident3PersonalData.n3> .
+
+:elder3 a pl:PUC ;
+pl:permitedpurpose term:scientific, term:medical, term:wellbeing, term:consultation, term:commercial ; 
+pl:object <Resident3PersonalData.n3> ;
+pl:hasLicense :License4 ;
+#pl:duration ”P0Y0M2D”ˆ ˆ xsd:duration ;
+#pl:maxUses ”3”ˆ ˆ xsd:integer ;
+pl:global-preference pl:optimistic ;
+pl:grantee <http://www.clinicasantaclarita.com/DrClementeHumbertoZunigaGil.html>, <http://serenaseniorcare.com/> ;
+pl:grantor <Resident3.n3> ;
+pl:usageLocality <http://dbpedia.org/resource/Mexico>, <http://dbpedia.org/resource/USA> ;
+pl:storageLocality <http://dbpedia.org/resource/Mexico>, <http://dbpedia.org/resource/USA> .

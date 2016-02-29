@@ -1,0 +1,18 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> . 
+@prefix dc: <http://purl.org/dc/terms/> .
+
+@prefix pl:  <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix wkf: <http://privacy-lookout.net/ontologies/current/pl-workflow.n3#> .
+@prefix lic: <http://privacy-lookout.net/ontologies/current/pl-licenses.n3#> .
+@prefix term: <http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#> .
+@prefix l4lod: <http://ns.inria.fr/l4lod/v2#> .
+
+@prefix : <Resident1PersonalData.n3> .
+
+:License1 a pl:License ;
+pl:permitedOperation term:read .
+

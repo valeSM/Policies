@@ -1,0 +1,26 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> . 
+@prefix dc: <http://purl.org/dc/terms/> .
+
+@prefix pl:  <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix wkf: <http://privacy-lookout.net/ontologies/current/pl-workflow.n3#> .
+@prefix lic: <http://privacy-lookout.net/ontologies/current/pl-licenses.n3#> .
+@prefix term: <http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#> .
+@prefix l4lod: <http://ns.inria.fr/l4lod/v2#> .
+
+@prefix : <Digitalresources.n3> .
+
+:researchCenter1 a pl:PUC ;
+pl:object <Digitalresources.n3> ;
+pl:hasLicense :License2 ;
+pl:permitedPurpose term:scientific ;
+pl:prohibitedPurpose term:sales, term:commercial ; 
+#pl:duration ”P0Y0M2D”ˆˆxsd:duration ;
+pl:begin "2014-02-03T00:00:00.000+01:00" ;
+pl:grantee <http://www.cicese.edu.mx/> ;
+pl:grantor <MaryThomson.n3> ;
+pl:usageLocality <http://dbpedia.org/resource/Mexico>;
+pl:storageLocality <http://dbpedia.org/resource/USA> .
