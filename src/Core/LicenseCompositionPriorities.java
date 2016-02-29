@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import Core.License.Term;
+//import Core.License.Term;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -49,7 +49,7 @@ public class LicenseCompositionPriorities {
 	public String ns_rdf_t = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	public String ns_resulted = "<file:///Users/valentina/Documents/workspace/PriLoo/policies/ResultedData.n3>";
 	public String ns_xsd = "<http://www.w3.org/2001/XMLSchema#>";
-	public String ns_purpose   = "http://privacy-lookout.net/ontologies/current/pl-ontology.n3#purpose" ;
+	public String ns_purpose   = "http://privacy-lookout.net/ontologies/current/pl-purpose.n3#" ;
 	
 	//private String fileName = "";
 	//private String fileType = "";
@@ -58,7 +58,7 @@ public class LicenseCompositionPriorities {
 	private Model input_model_2;
 	private Model output_model = null;
 	private String filename_resulted = "";
-	private ArrayList<License> licenses_list = null;
+	//private ArrayList<License> licenses_list = null;
 	private int num_license_actual = 0;
 	
 	static protected OntModel owlmodel = null;
@@ -141,10 +141,19 @@ public class LicenseCompositionPriorities {
 	
 	private boolean processPermitsPurposes(String p)
 	{
-		ArrayList<String> resultArray1 = this.searchProp(this.input_model_1, this.ns, "permits");
-		ArrayList<String> resultArray2 = this.searchProp(this.input_model_2, this.ns, "permits");
+		String subjectPUC = this.getSubject(this.input_model_1, this.ns+"PUC");
+		ArrayList<String> resultArray1 = this.seachObjects(this.input_model_1, this.input_model_1.getResource(subjectPUC), this.input_model_1.getProperty(this.ns, "permits"));//this.searchProp(this.input_model_1, this.ns, "permits");
+		
+		
+		subjectPUC = this.getSubject(this.input_model_2, this.ns+"PUC");
+		ArrayList<String> resultArray2 = this.seachObjects(this.input_model_2, this.input_model_2.getResource(subjectPUC), this.input_model_2.getProperty(this.ns, "permits"));//this.searchProp(this.input_model_2, this.ns, "permits");
 		
 		ArrayList<String> permitsArray = this.compareArrays(resultArray1, resultArray2, "AND");
+		
+		if (permitsArray.contains(this.ns_purpose + p))
+			System.out.println("Resulted policy contains the user's purpose: " + p);
+		else
+			System.out.println("--- Resulted policy does not contain the user's purpose: " + p);
 		
 		if (permitsArray != null)
 		{
@@ -188,60 +197,35 @@ public class LicenseCompositionPriorities {
 		}
 	}
 	
-//	private String getSubject(String namespace, String literal)
-//	{
-//		String subject = "";
-//		
-//		StmtIterator s = this.input_model_1.listStatements(new SimpleSelector(null, null, this.output_model.createResource(namespace+literal)));
-//		if (s.hasNext()) 
-//		{
-//		    while (s.hasNext()) 
-//		    {
-//		    	Statement m = s.nextStatement();
-//		    	//System.out.println(m.toString());
-//		        //System.out.println(m.getSubject().getLocalName());
-//		    	subject = m.getSubject().toString();
-//		    }
-//		}
-//		else 
-//		{
-//		    System.out.println("--- No PUC subject was found in model.");			
-//		}
-//		return subject;
-//	}
-	
-	
-	private boolean processProhibitsPurposes(String p)
+	private String getSubject(Model m, String uri)
 	{
-				
-		String subjectPUC = "";
+		String subject = "";
 		
-		StmtIterator s = this.input_model_1.listStatements(new SimpleSelector(null, null, this.input_model_1.getResource(this.ns+"PUC")));
+		StmtIterator s = m.listStatements(new SimpleSelector(null, null, m.getResource(uri)));
 		if (s.hasNext()) 
 		{
 		    while (s.hasNext()) 
 		    {
-		    	Statement m = s.nextStatement();
+		    	Statement st = s.nextStatement();
 		    	//System.out.println(m.toString());
 		        //System.out.println(m.getSubject().getLocalName());
-		        subjectPUC = m.getSubject().toString();
+		        subject = st.getSubject().toString();
 		    }
 		}
 		else 
 		{
 		    System.out.println("--- No PUC subject was found in model.");
-			return false;
+			return "";
 		}
-		
+		return subject;
+	}
+	
+	private boolean processProhibitsPurposes(String p)
+	{
+		String subjectPUC = this.getSubject(this.input_model_1, this.ns+"PUC");
 		ArrayList<String> resultArray1 = this.seachObjects(this.input_model_1, this.input_model_1.getResource(subjectPUC), this.input_model_1.getProperty(this.ns, "prohibits"));
+		subjectPUC = this.getSubject(this.input_model_2, this.ns+"PUC");
 		ArrayList<String> resultArray2 = this.seachObjects(this.input_model_2, this.input_model_2.getResource(subjectPUC), this.input_model_2.getProperty(this.ns, "prohibits"));
-
-		
-		/*
-		 * this.output_model.getResource(this.ns_resulted + "composed"),
-					RDF.type,
-					this.output_model.createProperty(this.ns, "PUC"));
-		 */
 		
 		ArrayList<String> prohibitsArray = this.compareArrays(resultArray1, resultArray2, "OR");
 		
@@ -738,108 +722,108 @@ public class LicenseCompositionPriorities {
 //		return l3;
 //	}
 	
-	private License operateLicense(License l1, License l2)
-	{
-		License r = new License();
-		r.setLicenseName("resultedPolicy");
-		r.addAllowedTerm(this.combineTerms(l1.getAllowedTermsList(), l2.getAllowedTermsList(), "AND"));
-		r.addMandatoryTerm(this.combineTerms(l1.getMandatoryTermsList(), l2.getMandatoryTermsList(), "OR"));
-		r.addProhibitedTerm(this.combineTerms(l1.getProhibitedTermsList(), l2.getProhibitedTermsList(), "OR"));
-		return r;
-	}
+//	private License operateLicense(License l1, License l2)
+//	{
+//		License r = new License();
+//		r.setLicenseName("resultedPolicy");
+//		r.addAllowedTerm(this.combineTerms(l1.getAllowedTermsList(), l2.getAllowedTermsList(), "AND"));
+//		r.addMandatoryTerm(this.combineTerms(l1.getMandatoryTermsList(), l2.getMandatoryTermsList(), "OR"));
+//		r.addProhibitedTerm(this.combineTerms(l1.getProhibitedTermsList(), l2.getProhibitedTermsList(), "OR"));
+//		return r;
+//	}
 	
 	//private ArrayList
 	
-	private ArrayList<Term> combineTerms(ArrayList<Term> t1, ArrayList<Term> t2, String operation)
-	{
-		ArrayList<Term> out = new ArrayList<Term>();
-		Hashtable<String, Integer> contenedor = new Hashtable<String,Integer>();
-
-		for (int i = 0; i < t1.size(); i++)
-		{
-			Term n = t1.get(i);
-			String text_val = n.getName();
-			if(contenedor.contains(text_val) == false)
-			{
-				contenedor.put(text_val, 1);
-				out.add(n);
-			}
-		}
-		for (int j = 0; j < t2.size(); j++)
-		{
-			Term n = t2.get(j);
-			String text_val = n.getName();
-			if(contenedor.containsKey(text_val) == false)
-			{
-				contenedor.put(text_val, 1);
-				out.add(n);
-			}
-			else
-			{
-				contenedor.put(text_val, 2);
-				// update state of the term in the output array
-				for (int k = 0; k < out.size(); k++)
-				{
-					Term t = out.get(k);
-					if (t.getName().equals(text_val))
-					{
-						if (this.num_license_actual == 1)
-							t.setStatus(true);
-						else
-							t.setStatus(t.isStatus() && true);
-					}
-				}
-			}
-		}
-
-	    Enumeration<String> keys = contenedor.keys();
-		while (keys.hasMoreElements()) 
-		{
-			String prop_value = keys.nextElement();
-			switch (operation)
-			{
-				case "AND":
-					//System.out.println("evaluate AND " + contenedor.toString() + "    with key = " + prop_value);
-					if (contenedor.get(prop_value) == 2)
-					{
-						for (int k = 0; k < out.size(); k++)
-						{
-							Term t = out.get(k);
-							if (t.getName().equals(prop_value))
-							{
-								t.setStatus(t.isStatus() && true);
-								//System.out.println(t.getName() + " = " + t.isStatus());		
-							}
-						}
-					}
-					else		// indicates that the term was only present in one of the actuals policies, but can be true from previous steps
-					{
-						for (int k = 0; k < out.size(); k++)
-						{
-							Term t = out.get(k);
-							if (t.getName().equals(prop_value))
-							{
-								t.setStatus(t.isStatus() && false);
-								//System.out.println(t.getName() + " = " + t.isStatus());		
-							}
-						}
-					}
-					break;
-				case "OR":
-					for (int m = 0; m < out.size(); m++)
-					{
-						Term t = out.get(m);
-						if(t.getName().equals(prop_value))
-							t.setStatus(true);
-					}
-					break;
-				default:
-					break;
-			}	
-		}
-		//System.out.println();
-		return out;
-	}
+//	private ArrayList<Term> combineTerms(ArrayList<Term> t1, ArrayList<Term> t2, String operation)
+//	{
+//		ArrayList<Term> out = new ArrayList<Term>();
+//		Hashtable<String, Integer> contenedor = new Hashtable<String,Integer>();
+//
+//		for (int i = 0; i < t1.size(); i++)
+//		{
+//			Term n = t1.get(i);
+//			String text_val = n.getName();
+//			if(contenedor.contains(text_val) == false)
+//			{
+//				contenedor.put(text_val, 1);
+//				out.add(n);
+//			}
+//		}
+//		for (int j = 0; j < t2.size(); j++)
+//		{
+//			Term n = t2.get(j);
+//			String text_val = n.getName();
+//			if(contenedor.containsKey(text_val) == false)
+//			{
+//				contenedor.put(text_val, 1);
+//				out.add(n);
+//			}
+//			else
+//			{
+//				contenedor.put(text_val, 2);
+//				// update state of the term in the output array
+//				for (int k = 0; k < out.size(); k++)
+//				{
+//					Term t = out.get(k);
+//					if (t.getName().equals(text_val))
+//					{
+//						if (this.num_license_actual == 1)
+//							t.setStatus(true);
+//						else
+//							t.setStatus(t.isStatus() && true);
+//					}
+//				}
+//			}
+//		}
+//
+//	    Enumeration<String> keys = contenedor.keys();
+//		while (keys.hasMoreElements()) 
+//		{
+//			String prop_value = keys.nextElement();
+//			switch (operation)
+//			{
+//				case "AND":
+//					//System.out.println("evaluate AND " + contenedor.toString() + "    with key = " + prop_value);
+//					if (contenedor.get(prop_value) == 2)
+//					{
+//						for (int k = 0; k < out.size(); k++)
+//						{
+//							Term t = out.get(k);
+//							if (t.getName().equals(prop_value))
+//							{
+//								t.setStatus(t.isStatus() && true);
+//								//System.out.println(t.getName() + " = " + t.isStatus());		
+//							}
+//						}
+//					}
+//					else		// indicates that the term was only present in one of the actuals policies, but can be true from previous steps
+//					{
+//						for (int k = 0; k < out.size(); k++)
+//						{
+//							Term t = out.get(k);
+//							if (t.getName().equals(prop_value))
+//							{
+//								t.setStatus(t.isStatus() && false);
+//								//System.out.println(t.getName() + " = " + t.isStatus());		
+//							}
+//						}
+//					}
+//					break;
+//				case "OR":
+//					for (int m = 0; m < out.size(); m++)
+//					{
+//						Term t = out.get(m);
+//						if(t.getName().equals(prop_value))
+//							t.setStatus(true);
+//					}
+//					break;
+//				default:
+//					break;
+//			}	
+//		}
+//		//System.out.println();
+//		return out;
+//	}
 	
 //	private void addLicenseToOutput(License l)
 //	{

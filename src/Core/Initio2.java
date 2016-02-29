@@ -19,7 +19,7 @@ public class Initio2 {
 		//args[0] = "/Users/valentina/Dropbox/module IR 2014/PrivacyLookout (dup. see on Drive)/Ontology-last version/policies/villata_approach2.ttl";
 		
 		
-		LicenseCompositionPriorities compproc = new LicenseCompositionPriorities(new File("/Users/valentina/Documents/workspace/PoliciesComposition/data/sample1.ttl"), new File("/Users/valentina/Documents/workspace/PoliciesComposition/data/sample2.ttl"), "TTL", "Medical");
+		LicenseCompositionPriorities compproc = new LicenseCompositionPriorities(new File("/Users/valentina/Documents/workspace/PoliciesComposition/data/sample1.ttl"), new File("/Users/valentina/Documents/workspace/PoliciesComposition/data/sample2.ttl"), "TTL", "medical");
 		
 		
 		//String resulted_filename = null;
