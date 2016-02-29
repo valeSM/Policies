@@ -1,0 +1,35 @@
+@prefix dc:    <http://purl.org/dc/terms/> .
+@prefix L2:    <file:///Users/valentina/Documents/workspace/PriLoo/policies/Resident2PersonalData.n3#> .
+@prefix lic:   <http://privacy-lookout.net/ontologies/current/pl-licenses.n3#> .
+@prefix purpose:   <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix term:  <http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#> .
+@prefix wkf:   <http://privacy-lookout.net/ontologies/current/pl-workflow.n3#> .
+@prefix l4lod: <http://ns.inria.fr/l4lod/v2#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix pl:    <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+L2:elder2 a pl:PUC ;
+		pl:begin               "2014-02-03T00:00:00.000+01:00" ;
+        pl:end                 "2015-02-03T00:00:00.000+01:00" ;
+        pl:getPurposeFrom      L2:License3 ;
+        pl:global-preference   pl:pessimistic ;
+        pl:grantee             <http://serenaseniorcare.com/> ;
+        pl:grantor             <file:///Users/valentina/Documents/workspace/PriLoo/policies/Resident2.n3> ;
+        pl:hasLicense          L2:License3 ;
+        pl:implicitProperties  pl:all-but-prohibited , pl:all-but-permited-or-obliged ;
+        pl:object              L2: ;
+        pl:permits             purpose:tracking , purpose:consultation , purpose:medical ;
+        pl:prohibits           purpose:gift , purpose:management , purpose:care , purpose:privateUse , purpose:wellbeing , purpose:sales ;
+        pl:storageLocality     <http://dbpedia.org/resource/Mexico> ;
+        pl:usageLocality       <http://dbpedia.org/resource/Mexico> .
+
+L2:License3 a pl:License ;
+        pl:operationProperty  term:read , term:distribute ;
+        pl:permitedOperation  term:read , term:distribute ;
+        pl:permits            term:read , term:unlimitedDisclosure , term:distribute ;
+        pl:policyProperty     term:using , term:by , term:copy , term:unlimitedDisclosure , term:limitedCommercial , term:copyrightNotice , term:history , term:fairDealing , term:distribute , term:waiver , term:sharing , term:read , term:origin , term:warranty , term:derivative , term:write , term:publishing , term:constraintDerivative , term:holdLiable , term:otherRightsPreserve , term:sa , term:rightsPreserve , term:moralRightsPreserve , term:lesserCopyLeft , term:rename , term:freeSourceCode , term:PublicDomainPreserve , term:notice ;
+        pl:prohibits          term:using , term:warranty , term:constraintDerivative , term:holdLiable , term:rightsPreserve , term:limitedCommercial , term:notice , term:copy , term:history , term:sharing , term:origin , term:freeSourceCode , term:moralRightsPreserve , term:by , term:rename , term:copyrightNotice , term:waiver , term:lesserCopyLeft , term:derivative , term:write , term:PublicDomainPreserve , term:fairDealing , term:sa , term:publishing , term:otherRightsPreserve .

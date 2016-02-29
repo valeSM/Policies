@@ -1,0 +1,36 @@
+@prefix dc:    <http://purl.org/dc/terms/> .
+@prefix L1:    <file:///Users/valentina/Documents/workspace/PriLoo/policies/Resident1PersonalData.n3#> .
+@prefix lic:   <http://privacy-lookout.net/ontologies/current/pl-licenses.n3#> .
+@prefix purpose:   <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix term:  <http://privacy-lookout.net/ontologies/current/pl-usage-terms.n3#> .
+@prefix wkf:   <http://privacy-lookout.net/ontologies/current/pl-workflow.n3#> .
+@prefix l4lod: <http://ns.inria.fr/l4lod/v2#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix pl:    <http://privacy-lookout.net/ontologies/current/pl-ontology.n3#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+L1:elder1 a pl:PUC ;
+        pl:begin               "2014-03-03T00:00:00.000+01:00" ;
+        pl:end                 "2015-03-03T00:00:00.000+01:00" ;
+        pl:getPurposeFrom      L1:License1 ;
+        pl:global-preference   pl:pessimistic ;
+        pl:grantee             <http://www.clinicasantaclarita.com/DrClementeHumbertoZunigaGil.html> , <http://www.cicese.edu.mx/> , <http://serenaseniorcare.com/> ;
+        pl:grantor             <file:///Users/valentina/Documents/workspace/PriLoo/policies/Resident1.n3> ;
+        pl:hasLicense          L1:License1 ;
+        pl:implicitProperties  pl:all-but-permited-or-obliged , pl:all-but-prohibited ;
+        pl:object              L1: ;
+        pl:permits             purpose:consultation , purpose:medical , purpose:scientific ;
+        pl:prohibits           purpose:care , purpose:privateUse , purpose:sales , purpose:management , purpose:wellbeing , purpose:gift , purpose:commercial , purpose:tracking ;
+        pl:storageLocality     <http://dbpedia.org/resource/Mexico> ;
+        pl:usageLocality       <http://dbpedia.org/resource/USA> , <http://dbpedia.org/resource/Mexico> .
+
+L1:License1 a pl:License ;
+        pl:obliges            term:constraintDerivative ;
+        pl:operationProperty  term:read ;
+        pl:permitedOperation  term:read ;
+        pl:permits            term:publishing , term:read ;
+        pl:policyProperty     term:copyrightNotice , term:limitedCommercial , term:copy , term:sharing , term:notice , term:unlimitedDisclosure , term:rightsPreserve , term:lesserCopyLeft , term:origin , term:history , term:otherRightsPreserve , term:read , term:PublicDomainPreserve , term:derivative , term:constraintDerivative , term:holdLiable , term:warranty , term:fairDealing , term:rename , term:publishing , term:write , term:moralRightsPreserve , term:freeSourceCode , term:using , term:by , term:distribute , term:sa , term:waiver ;
+        pl:prohibits          term:derivative , term:by , term:copyrightNotice , term:history , term:copy , term:sharing , term:write , term:rightsPreserve , term:limitedCommercial , term:waiver , term:fairDealing , term:otherRightsPreserve , term:rename , term:warranty , term:unlimitedDisclosure , term:using , term:freeSourceCode , term:sa , term:notice , term:origin , term:moralRightsPreserve , term:PublicDomainPreserve , term:lesserCopyLeft , term:holdLiable , term:distribute .
