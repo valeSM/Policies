@@ -80,12 +80,8 @@ public class LicenseCompositionPriorities {
 				{
 					// process license
 					this.processLicense();
+					this.printOutputModel("TTL");
 				}
-				// merge
-				
-				
-				//this.exploreModel();
-				//this.compose();
 			}
 		}
 	}
@@ -104,7 +100,7 @@ public class LicenseCompositionPriorities {
 						
 						if (processPurposes(purpose))
 						{
-							this.printOutputModel("TTL");
+							
 							return true;
 						}
 					}
@@ -150,19 +146,23 @@ public class LicenseCompositionPriorities {
 		
 		ArrayList<String> permitsArray = this.compareArrays(resultArray1, resultArray2, "AND");
 		
-		if (permitsArray.contains(this.ns_purpose + p))
-			System.out.println("Resulted policy contains the user's purpose: " + p);
-		else
-			System.out.println("--- Resulted policy does not contain the user's purpose: " + p);
-		
 		if (permitsArray != null)
 		{
-			// add all permited purposes to the PUC
-			for (int i = 0; i < permitsArray.size(); i++)
+			if (permitsArray.contains(this.ns_purpose + p))
 			{
-				this.addStatement2PUC(this.ns_resulted + "composed", this.ns + "permits", permitsArray.get(i));
+				//System.out.println("Resulted policy permits the user's purpose: " + p);
+				// add all permited purposes to the PUC
+				for (int i = 0; i < permitsArray.size(); i++)
+				{
+					this.addStatement2PUC(this.ns_resulted + "composed", this.ns + "permits", permitsArray.get(i));
+				}
+				return true;
 			}
-			return true;
+			else
+			{
+				System.out.println("--- Resulted policy does not permit the user's purpose: " + p);
+				return false;
+			}			
 		}
 		else
 		{
@@ -175,21 +175,20 @@ public class LicenseCompositionPriorities {
 		try
 		{
 			ArrayList<String> resultArray = new ArrayList<String>();
-			//Property p = m.getProperty(namespace, propname);
-			System.out.println("\t" + s.toString());
-			System.out.println("\t" + p.toString());
+			
+			//System.out.println("\t" + s.toString());
+			//System.out.println("\t" + p.toString());
 			
 			int i = 0;
-			StmtIterator r = m.listStatements(s, p, (String)null);
-			//StmtIterator r = m.listStatements(s, (Property)null, (String)null);
+			StmtIterator r = m.listStatements(s, p, (String)null);			
 			while (r.hasNext())
 			{
 				Statement node = r.nextStatement();//.next();
 				resultArray.add(i, node.getObject().toString());
-				System.out.println("\t\t+ " + node.toString());
+				//System.out.println("\t\t+ " + node.toString());
 				i = i + 1;
 			}
-			System.out.println();
+			//System.out.println();
 			return resultArray;
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
@@ -418,6 +417,14 @@ public class LicenseCompositionPriorities {
 	{
 		ArrayList<String> c = new ArrayList<String>();
 		ArrayList<String> d = new ArrayList<String>();
+		if (a == null && b != null)
+			return b;
+		if (a.size() == 0 && b != null)
+			return b;
+		if (b == null && a != null)
+			return a;
+		if (b.size() == 0 && a != null)
+			return a;
 		if (a != null && b != null)
 		{
 			for (int i = 0; i < a.size(); i++)
@@ -450,6 +457,7 @@ public class LicenseCompositionPriorities {
 				return c;
 			}
 		}
+		
 		return null;
 	}
 	
@@ -459,7 +467,7 @@ public class LicenseCompositionPriorities {
 		{
 			ArrayList<String> resultArray = new ArrayList<String>();
 			Property p = m.getProperty(namespace, propname);
-			System.out.println(p.toString());
+			//System.out.println(p.toString());
 			
 			int i = 0;
 			NodeIterator r = m.listObjectsOfProperty(p);//getResource(this.ns);
@@ -467,10 +475,10 @@ public class LicenseCompositionPriorities {
 			{
 				RDFNode node = r.nextNode();//.next();
 				resultArray.add(i, node.toString());
-				System.out.println("+ " + node.toString());
+				//System.out.println("+ " + node.toString());
 				i = i + 1;
 			}
-			System.out.println();
+			//System.out.println();
 			return resultArray;
 		} catch(Exception e) {
 			System.err.println(e.getMessage());
@@ -507,39 +515,6 @@ public class LicenseCompositionPriorities {
 		datesArray.add(1, this.searchProp(this.input_model_2, this.ns, "begin").get(0));
 		datesArray.add(2, this.searchProp(this.input_model_1, this.ns, "end").get(0));
 		datesArray.add(3, this.searchProp(this.input_model_2, this.ns, "end").get(0));
-		
-//		// Recover the begin dates
-//		Property p = this.input_model.getProperty(this.ns, "begin");
-//		System.out.println(p.toString());
-//		
-//		int i = 0;
-//		NodeIterator r = this.input_model.listObjectsOfProperty(p);//getResource(this.ns);
-//		while (r.hasNext())
-//		{
-//			RDFNode node = r.nextNode();//.next();
-//			datesArray.add(i, node.toString());
-//			System.out.println("+ " + node.toString());
-//			i = i + 1;
-//		}
-//		System.out.println();
-		
-//		p = null;
-//		r = null;
-//		
-//		// Recover the end dates
-//		p = this.input_model.getProperty(this.ns, "end");
-//		System.out.println(p.toString());
-//		
-//
-//		r = this.input_model.listObjectsOfProperty(p);//getResource(this.ns);
-//		while (r.hasNext())
-//		{
-//			RDFNode node = r.nextNode();//.next();
-//			datesArray.add(i, node.toString());
-//			System.out.println("+ " + node.toString());
-//			i = i + 1;
-//		}
-//		System.out.println();
 					
 		String beg1 = datesArray.get(0);//"2014-02-03T00:00:00.000+01:00";
 		String beg2 = datesArray.get(1);//"2014-02-03T00:00:00.000-06:00";
@@ -645,316 +620,63 @@ public class LicenseCompositionPriorities {
 		return dt;
 	}
 	
-	private void processLicense()
+	private boolean processLicense()
 	{
+		String subjectPUC = this.getSubject(this.input_model_1, this.ns+"License");
+		ArrayList<String> resultArray1 = this.seachObjects(this.input_model_1, this.input_model_1.getResource(subjectPUC), this.input_model_1.getProperty(this.ns, "permits"));
+		subjectPUC = this.getSubject(this.input_model_2, this.ns+"License");
+		ArrayList<String> resultArray2 = this.seachObjects(this.input_model_2, this.input_model_2.getResource(subjectPUC), this.input_model_2.getProperty(this.ns, "permits"));
+		ArrayList<String> permitsArray = this.compareArrays(resultArray1, resultArray2, "AND");		
 		
+		subjectPUC = this.getSubject(this.input_model_1, this.ns+"License");
+		resultArray1 = this.seachObjects(this.input_model_1, this.input_model_1.getResource(subjectPUC), this.input_model_1.getProperty(this.ns, "prohibits"));
+		subjectPUC = this.getSubject(this.input_model_2, this.ns+"License");
+		resultArray2 = this.seachObjects(this.input_model_2, this.input_model_2.getResource(subjectPUC), this.input_model_2.getProperty(this.ns, "prohibits"));
+		ArrayList<String> prohibitsArray = this.compareArrays(resultArray1, resultArray2, "OR");
+		
+		subjectPUC = this.getSubject(this.input_model_1, this.ns+"License");
+		resultArray1 = this.seachObjects(this.input_model_1, this.input_model_1.getResource(subjectPUC), this.input_model_1.getProperty(this.ns, "obliges"));
+		subjectPUC = this.getSubject(this.input_model_2, this.ns+"License");
+		resultArray2 = this.seachObjects(this.input_model_2, this.input_model_2.getResource(subjectPUC), this.input_model_2.getProperty(this.ns, "obliges"));
+		ArrayList<String> obligesArray = this.compareArrays(resultArray1, resultArray2, "OR");
+		
+		Statement new_tripple = this.output_model.createStatement(
+				this.output_model.getResource(this.ns_resulted + "licensed"),
+				RDF.type,
+				this.output_model.createProperty(this.ns, "License"));
+		this.output_model.add(new_tripple);
+		
+		if (permitsArray.contains(prohibitsArray) || permitsArray.contains(obligesArray) || obligesArray.contains(prohibitsArray))
+		{
+			System.out.println("--- Some terms causes inconsistencies.");
+			return false;
+		}
+		else
+		{
+			if (permitsArray != null)
+			{
+				for (int i = 0; i < permitsArray.size(); i++)
+				{
+					this.addStatement2PUC(this.ns_resulted + "licensed", this.ns + "permits", permitsArray.get(i));
+				}								
+			}
+			if (prohibitsArray != null)
+			{
+				for (int i = 0; i < prohibitsArray.size(); i++)
+				{
+					this.addStatement2PUC(this.ns_resulted + "licensed", this.ns + "prohibits", prohibitsArray.get(i));
+				}					
+			}
+			if (obligesArray != null)
+			{
+				for (int i = 0; i < obligesArray.size(); i++)
+				{
+					this.addStatement2PUC(this.ns_resulted + "licensed", this.ns + "obliges", obligesArray.get(i));
+				}					
+			}
+			return true;
+		}
 	}
-	
-//	public String analyzeFile(File policy_1, File policy_2, String format, String purpose)
-//	{
-//		String output_filename = "/Users/valentina/Documents/workspace/PoliciesComposition/data/Resulted_policy.ttl";
-//		this.licenses_list = new ArrayList<License>();
-//		try
-//		{
-//			// when there is only one file as an input
-//			if (policy_2 == null)
-//			{
-//				// load the first file to the input_model
-//				if (this.loadFile(policy_1.getAbsolutePath(), format))
-//				{
-//					printInputModel(format);
-//					// merge
-//					this.exploreModel();
-//					this.compose();
-//				}
-//			}
-//			else	// two files as input
-//			{
-//				// load two files to the input_model
-//				if (this.loadFile(policy_1.getAbsolutePath(), format) && this.loadFile(policy_2.getAbsolutePath(), format))
-//				{
-//					printInputModel(format);
-//					this.exploreModel();
-//					this.compose();					
-//				}
-//			}
-//			this.writeOutputFile(output_filename, format);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		this.input_model = null;
-//		this.output_model = null;
-//		this.licenses_list = null;
-//		return this.filename_resulted = output_filename;
-//	}
-	
-	// merges the licenses in licenses_list
-//	private void compose()
-//	{
-//		License final_license = null;
-//		try
-//		{
-//			for (int i = 0; i < this.licenses_list.size(); i++)
-//			{
-//				this.num_license_actual = i;
-//				final_license = mergeLicenses(final_license, this.licenses_list.get(i));
-//			}
-//			this.addLicenseToOutput(final_license);
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
-//	public License mergeLicenses(License l1, License l2)
-//	{
-//		License l3 = null;
-//		if (l1 == null)
-//		{
-//			l3 = l2;
-//			//this.output_model.setNsPrefixes(this.input_model.getNsPrefixMap());
-//			//Resource new_resource = this.output_model.createResource(this.ns_l + "resultedPolicy");
-//		}
-//		else
-//		{
-//			l3 = this.operateLicense(l1,l2);
-//			this.addLicenseToOutput(l3);
-//		}
-//		return l3;
-//	}
-	
-//	private License operateLicense(License l1, License l2)
-//	{
-//		License r = new License();
-//		r.setLicenseName("resultedPolicy");
-//		r.addAllowedTerm(this.combineTerms(l1.getAllowedTermsList(), l2.getAllowedTermsList(), "AND"));
-//		r.addMandatoryTerm(this.combineTerms(l1.getMandatoryTermsList(), l2.getMandatoryTermsList(), "OR"));
-//		r.addProhibitedTerm(this.combineTerms(l1.getProhibitedTermsList(), l2.getProhibitedTermsList(), "OR"));
-//		return r;
-//	}
-	
-	//private ArrayList
-	
-//	private ArrayList<Term> combineTerms(ArrayList<Term> t1, ArrayList<Term> t2, String operation)
-//	{
-//		ArrayList<Term> out = new ArrayList<Term>();
-//		Hashtable<String, Integer> contenedor = new Hashtable<String,Integer>();
-//
-//		for (int i = 0; i < t1.size(); i++)
-//		{
-//			Term n = t1.get(i);
-//			String text_val = n.getName();
-//			if(contenedor.contains(text_val) == false)
-//			{
-//				contenedor.put(text_val, 1);
-//				out.add(n);
-//			}
-//		}
-//		for (int j = 0; j < t2.size(); j++)
-//		{
-//			Term n = t2.get(j);
-//			String text_val = n.getName();
-//			if(contenedor.containsKey(text_val) == false)
-//			{
-//				contenedor.put(text_val, 1);
-//				out.add(n);
-//			}
-//			else
-//			{
-//				contenedor.put(text_val, 2);
-//				// update state of the term in the output array
-//				for (int k = 0; k < out.size(); k++)
-//				{
-//					Term t = out.get(k);
-//					if (t.getName().equals(text_val))
-//					{
-//						if (this.num_license_actual == 1)
-//							t.setStatus(true);
-//						else
-//							t.setStatus(t.isStatus() && true);
-//					}
-//				}
-//			}
-//		}
-//
-//	    Enumeration<String> keys = contenedor.keys();
-//		while (keys.hasMoreElements()) 
-//		{
-//			String prop_value = keys.nextElement();
-//			switch (operation)
-//			{
-//				case "AND":
-//					//System.out.println("evaluate AND " + contenedor.toString() + "    with key = " + prop_value);
-//					if (contenedor.get(prop_value) == 2)
-//					{
-//						for (int k = 0; k < out.size(); k++)
-//						{
-//							Term t = out.get(k);
-//							if (t.getName().equals(prop_value))
-//							{
-//								t.setStatus(t.isStatus() && true);
-//								//System.out.println(t.getName() + " = " + t.isStatus());		
-//							}
-//						}
-//					}
-//					else		// indicates that the term was only present in one of the actuals policies, but can be true from previous steps
-//					{
-//						for (int k = 0; k < out.size(); k++)
-//						{
-//							Term t = out.get(k);
-//							if (t.getName().equals(prop_value))
-//							{
-//								t.setStatus(t.isStatus() && false);
-//								//System.out.println(t.getName() + " = " + t.isStatus());		
-//							}
-//						}
-//					}
-//					break;
-//				case "OR":
-//					for (int m = 0; m < out.size(); m++)
-//					{
-//						Term t = out.get(m);
-//						if(t.getName().equals(prop_value))
-//							t.setStatus(true);
-//					}
-//					break;
-//				default:
-//					break;
-//			}	
-//		}
-//		//System.out.println();
-//		return out;
-//	}
-	
-//	private void addLicenseToOutput(License l)
-//	{
-//		this.output_model = ModelFactory.createDefaultModel();
-//		this.output_model.setNsPrefixes(this.input_model.getNsPrefixMap());
-//		this.addLicense2Model("License", "a", l.getLicenseName());
-//		Resource new_resource = this.output_model.createResource(this.ns_l + l.getLicenseName());
-//		
-//		
-//		// add mandatory terms
-//		for (int i = 0; i < l.getMandatoryTermsList().size(); i++)
-//		{
-//			Term aux = l.getMandatoryTermsList().get(i);
-//			if (aux.isStatus())
-//				//this.addTerm(l.getLicenseName(), "mandatory" + aux.getType(), aux.getName());
-//				this.addTerm(l.getLicenseName(), "obliges", aux.getName());
-//		}
-//		
-//		// add allowed terms
-//		for (int i = 0; i < l.getAllowedTermsList().size(); i++)
-//		{
-//			Term aux = l.getAllowedTermsList().get(i);
-//			if (aux.isStatus())
-//				//this.addTerm(l.getLicenseName(), "allowed" + aux.getType(), aux.getName());
-//				this.addTerm(l.getLicenseName(), "permits", aux.getName());
-//		}
-//		
-//		// add prohibited terms
-//		for (int i = 0; i < l.getProhibitedTermsList().size(); i++)
-//		{
-//			Term aux = l.getProhibitedTermsList().get(i);
-//			if (aux.isStatus())
-//				//this.addTerm(l.getLicenseName(), "prohibited" + aux.getType(), aux.getName());
-//				this.addTerm(l.getLicenseName(), "prohibits", aux.getName());
-//		}
-//	}
-	
-//	private void addLicense2Model(String sub, String p, String obj)
-//	{
-//		Statement new_tripple = this.output_model.createStatement(
-//				this.output_model.getResource(this.ns_l + obj),
-//				RDF.type,
-//				this.output_model.createProperty(this.ns, sub));
-//		this.output_model.add(new_tripple);
-//	}
-	
-//	private void addTerm(String sub, String p, String obj)
-//	{
-//		Statement new_tripple = this.output_model.createStatement(
-//				this.output_model.getResource(this.ns_l + sub),
-//				this.output_model.createProperty(this.ns + p),
-//				this.output_model.createProperty(this.ns_t, obj));
-//		this.output_model.add(new_tripple);
-//	}
-	
-	// analyzes the input_model to search for licenses
-//	private void exploreModel()
-//	{
-//		System.out.println();
-//		try
-//		{
-//			License l;
-//			Property p;			
-//			ResIterator q = this.input_model.listSubjects();
-//			while (q.hasNext())
-//			{
-//				Resource lic = q.nextResource();
-//				l = new License();
-//				l.setLicenseName(lic.getLocalName());
-//				
-//				// obtain the different properties
-//				// all allowed terms
-//				ArrayList<String> aux;
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "permits");
-//				if(aux.size() != 0)
-//					l.addAllowedTerm(aux, "Permits");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibits");
-//				if(aux.size() != 0)
-//					l.addProhibitedTerm(aux, "Prohibitions");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "obliges");
-//				if(aux.size() != 0)
-//					l.addMandatoryTerm(aux, "Obligations");
-//				
-//				/*aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedOperation");
-//				if(aux.size() != 0)
-//					l.addAllowedTerm(aux, "Operation");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedStatement");
-//				if(aux.size() != 0)
-//					l.addAllowedTerm(aux, "Statement");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "allowedPurpose");
-//				if(aux.size() != 0)
-//					l.addAllowedTerm(aux, "Purpose");
-//				
-//				// all mandatory terms
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryOperation");
-//				if(aux.size() != 0)
-//					l.addMandatoryTerm(aux, "Operation");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryStatement");
-//				if(aux.size() != 0)
-//					l.addMandatoryTerm(aux, "Statement");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "mandatoryPurpose");
-//				if(aux.size() != 0)
-//					l.addMandatoryTerm(aux, "Purpose");
-//				
-//				// all prohibited terms
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedOperation");
-//				if(aux.size() != 0)
-//					l.addProhibitedTerm(aux, "Operation");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedStatement");
-//				if(aux.size() != 0)
-//					l.addProhibitedTerm(aux, "Statement");
-//				
-//				aux = getSpecificLocalNameOfProperty(lic, this.ns, "prohibitedPurpose");
-//				if(aux.size() != 0)
-//					l.addProhibitedTerm(aux, "Purpose");*/
-//				
-//				this.licenses_list.add(l);
-//			}
-//			//System.out.println("number of licenses found = " + this.licenses_list.size());
-//		    System.out.println();
-//		} catch(PropertyNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
 	
 	private ArrayList<String> getSpecificLocalNameOfProperty(Resource r, String namespace, String property_localname)
 	{
